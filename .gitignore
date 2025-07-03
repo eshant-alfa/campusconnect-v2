@@ -164,3 +164,26 @@ credentials.json
 # Backup files
 *.bak
 *.backup
+
+# Node
+node_modules/
+.env
+.env.*
+dist/
+.next/
+out/
+.cache/
+*.log
+
+# Sanity
+.sanity/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.local
+*.swp
+.idea/
+.vscode/
