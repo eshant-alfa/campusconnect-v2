@@ -9,8 +9,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { createPost } from "@/action/createPost";
-import { getSubredditBySlug } from "@/sanity/lib/subreddit/getSubredditBySlug";
-import { useUser } from "@clerk/nextjs";
 import dynamic from 'next/dynamic';
 
 const ReactSelect = dynamic(() => import('react-select'), { ssr: false });
@@ -22,39 +20,12 @@ function CreatePostForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isMember, setIsMember] = useState<boolean | null>(null);
-  const [checkingMembership, setCheckingMembership] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const subreddit = searchParams.get("subreddit");
-  const { user } = useUser();
   const [categories, setCategories] = useState<{_id: string, title: string}[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
-  useEffect(() => {
-    async function checkMembership() {
-      if (!subreddit || !user) {
-        setIsMember(null);
-        return;
-      }
-      setCheckingMembership(true);
-      try {
-        const res = await fetch("/api/community-membership", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slug: subreddit, userId: user.id }),
-        });
-        const data = await res.json();
-        setIsMember(data.isMember);
-      } catch (e) {
-        setIsMember(false);
-      } finally {
-        setCheckingMembership(false);
-      }
-    }
-    checkMembership();
-  }, [subreddit, user]);
 
   useEffect(() => {
     // Fetch categories from Sanity

@@ -33,8 +33,12 @@ export default function CreateMarketplaceItemPage() {
       } else {
         setError(data.error || 'Failed to create item.');
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Something went wrong.');
+      } else {
+        setError('Something went wrong.');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,7 +113,7 @@ export default function CreateMarketplaceItemPage() {
                 <input type="file" name="image" className="w-full text-sm" accept="image/*" onChange={handleImageChange} />
                 {imagePreview && (
                   <div className="mt-4 flex justify-center">
-                    <img src={imagePreview} alt="Preview" className="h-40 w-40 object-cover rounded-xl border border-gray-200 shadow-lg" />
+                    <Image src={imagePreview} alt="Preview" width={160} height={160} className="h-40 w-40 object-cover rounded-xl border border-gray-200 shadow-lg" />
                   </div>
                 )}
               </div>

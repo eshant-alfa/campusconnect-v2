@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Search, MapPin, Thermometer, Droplets, Wind, Eye, Sunrise, Sunset, Clock } from "lucide-react";
+import { Search, MapPin, Thermometer, Droplets, Wind, Eye, Sunrise, Sunset } from "lucide-react";
 
 const weatherIcons: Record<string, string> = {
   Clear: "☀️",
@@ -22,11 +22,18 @@ const weatherIcons: Record<string, string> = {
 
 const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
 
-// For future use: type WeatherData = { temperature: number; description: string; icon: string; };
+type WeatherData = {
+  name: string;
+  sys: { country: string; sunrise: number; sunset: number };
+  weather: { main: string; description: string }[];
+  main: { temp: number; feels_like: number; temp_max: number; temp_min: number; humidity: number };
+  wind: { speed: number };
+  visibility: number;
+};
 
 export default function WeatherPage() {
   const [city, setCity] = useState("Sydney,AU");
-  const [weather, setWeather] = useState<any>(null);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,8 +47,8 @@ export default function WeatherPage() {
       );
       if (!res.ok) throw new Error("City not found");
       const data = await res.json();
-      setWeather(data);
-    } catch (e) {
+      setWeather(data as WeatherData);
+    } catch {
       setError("Failed to fetch weather data");
     } finally {
       setLoading(false);

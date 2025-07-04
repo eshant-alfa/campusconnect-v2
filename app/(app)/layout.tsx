@@ -6,7 +6,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header/Header";
 import { SanityLive } from "@/sanity/lib/live";
-import { ArrowLeft } from 'lucide-react';
 import { ChatModalProvider } from "@/components/chat/ChatModalContext";
 
 const geistSans = Geist({

@@ -72,9 +72,9 @@ function Post({ post, userId, comments, votes, vote }: PostProps) {
           </div>
 
           {/* Category tags */}
-          {Array.isArray((post as any).categories) && (post as any).categories.length > 0 && (
+          {Array.isArray((post as unknown as { categories?: { _id: string; title: string }[] }).categories) && ((post as unknown as { categories?: { _id: string; title: string }[] }).categories?.length ?? 0) > 0 && (
             <div className="mb-2 flex flex-wrap gap-2">
-              {(post as any).categories.map((cat: any) => (
+              {(post as unknown as { categories: { _id: string; title: string }[] }).categories.map((cat) => (
                 <span
                   key={cat._id}
                   className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"

@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ExternalLink, BookOpen, Heart, GraduationCap, Scale, Briefcase, Map, Bus, Search, Star, Clock, Users } from "lucide-react";
+import { ExternalLink, BookOpen, Heart, GraduationCap, Scale, Briefcase, Map, Bus, Star } from "lucide-react";
 
 const resources = [
   {
@@ -73,16 +73,6 @@ const resources = [
     featured: false,
     tags: ["Public Transport", "Planning", "Travel"]
   },
-];
-
-const categories = [
-  { name: "All", value: "all", icon: Search },
-  { name: "Academic", value: "Academic", icon: BookOpen },
-  { name: "Health", value: "Health & Wellness", icon: Heart },
-  { name: "Career", value: "Career", icon: Briefcase },
-  { name: "Legal", value: "Legal", icon: Scale },
-  { name: "Transport", value: "Transport", icon: Bus },
-  { name: "Navigation", value: "Navigation", icon: Map },
 ];
 
 export default function ResourcesPage() {

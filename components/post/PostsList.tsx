@@ -4,8 +4,9 @@ import { getPostVotes } from "@/sanity/lib/vote/getPostVotes";
 import { getUserPostVoteStatus } from "@/sanity/lib/vote/getUserPostVoteStatus";
 import { currentUser } from "@clerk/nextjs/server";
 import Post from "./Post";
-import { Users, Plus, MessageSquare } from "lucide-react";
+import { Users, Plus } from "lucide-react";
 import Link from "next/link";
+import { GetAllPostsQueryResult } from "@/sanity.types";
 
 async function PostsList() {
   const posts = await getPosts();
@@ -36,7 +37,7 @@ async function PostsList() {
 
   // Fetch comments, votes, and vote for each post in parallel
   const postData = await Promise.all(
-    posts.map(async (post: any) => {
+    posts.map(async (post: GetAllPostsQueryResult[number]) => {
       const [comments, votes, vote] = await Promise.all([
         getPostComments(post._id, userId),
         getPostVotes(post._id),

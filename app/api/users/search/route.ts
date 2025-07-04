@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   try {
     const users = await sanity.fetch(query, { pattern });
     return NextResponse.json({ users });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to search users" }, { status: 500 });
+  } catch {
+    // handle error if needed
   }
 } 

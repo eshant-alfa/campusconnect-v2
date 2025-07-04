@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   const community = await getSubredditBySlug(slug);
   const isMember =
     community && Array.isArray(community.members)
-      ? community.members.some((member: any) => member._id === userId)
+      ? community.members.some((member: { _id: string }) => member._id === userId)
       : false;
   return NextResponse.json({ isMember });
 } 

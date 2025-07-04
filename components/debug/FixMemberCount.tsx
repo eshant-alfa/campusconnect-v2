@@ -6,7 +6,7 @@ import { fixMemberCount } from "@/action/fixMemberCount";
 
 export default function FixMemberCount() {
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<string | null>(null);
 
   const handleFixMemberCount = async () => {
     setIsLoading(true);
@@ -14,9 +14,9 @@ export default function FixMemberCount() {
     
     try {
       const response = await fixMemberCount();
-      setResult(response);
+      setResult(typeof response === 'string' ? response : JSON.stringify(response, null, 2));
     } catch (error) {
-      setResult({ error: error instanceof Error ? error.message : 'Unknown error' });
+      setResult(error instanceof Error ? error.message : 'Unknown error');
     } finally {
       setIsLoading(false);
     }
@@ -38,7 +38,7 @@ export default function FixMemberCount() {
         <div className="mt-4">
           <h4 className="font-medium mb-2">Result:</h4>
           <pre className="bg-gray-100 p-3 rounded text-sm overflow-auto">
-            {JSON.stringify(result, null, 2)}
+            {result}
           </pre>
         </div>
       )}

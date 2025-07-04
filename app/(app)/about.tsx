@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Users, MessageCircle, ShoppingBag, Bell, Lock, Globe, Megaphone, Mail, UserCheck } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AboutPage() {
   return (
@@ -11,9 +12,11 @@ export default function AboutPage() {
           <p className="text-xl md:text-2xl text-blue-700 mb-6 max-w-xl">Campus Connect brings students, staff, and communities together for authentic connection, resource sharing, and campus life all in one safe, modern platform.</p>
         </div>
         <div className="flex-1 flex justify-center md:justify-end mt-8 md:mt-0">
-          <img
+          <Image
             src="/images/full_logo.png"
             alt="Campus Connect Logo"
+            width={192}
+            height={192}
             className="h-48 w-auto rounded-2xl shadow-xl border-4 border-white bg-white"
           />
         </div>

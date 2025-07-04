@@ -5,13 +5,13 @@ import { getAuth } from '@clerk/nextjs/server';
 export const runtime = 'nodejs';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id: itemId } = await params;
   try {
     const { userId } = getAuth(req);
     if (!userId) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
 
-    const itemId = params.id;
     const item = await adminClient.fetch(
       '*[_type == "marketplaceItem" && _id == $id][0]{ _id, seller->{_id} }',
       { id: itemId }
@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const data = await req.json();
-    const patch: Record<string, any> = {};
+    const patch: Record<string, unknown> = {};
     if (data.title) patch.title = data.title;
     if (data.description) patch.description = data.description;
     if (data.price) patch.price = data.price;
@@ -34,18 +34,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     const updated = await adminClient.patch(itemId).set(patch).commit();
     return NextResponse.json({ success: true, item: updated });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, error: 'Unknown error' }, { status: 500 });
   }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id: itemId } = await params;
   try {
     const { userId } = getAuth(req);
     if (!userId) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
-    const itemId = params.id;
     const item = await adminClient.fetch(
       '*[_type == "marketplaceItem" && _id == $id][0]{ _id, seller->{_id} }',
       { id: itemId }
@@ -58,7 +61,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
     await adminClient.delete(itemId);
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, error: 'Unknown error' }, { status: 500 });
   }
 } 

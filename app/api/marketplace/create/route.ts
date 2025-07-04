@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminClient } from '@/sanity/lib/adminClient';
-import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from '@clerk/nextjs/server';
 
 export const runtime = 'nodejs';
@@ -58,7 +57,10 @@ export async function POST(req: NextRequest) {
 
     const created = await adminClient.create(doc);
     return NextResponse.json({ success: true, item: created });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, error: 'Unknown error' }, { status: 500 });
   }
 } 

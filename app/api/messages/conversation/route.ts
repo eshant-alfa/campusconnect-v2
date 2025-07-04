@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
     try {
       const messages = await sanity.fetch(query, { userA, userB });
       return NextResponse.json({ messages });
-    } catch (error) {
-      return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+    } catch {
+      // handle error if needed
     }
   } else if (userId) {
     // Fetch all messages where the user is either the sender or a recipient
@@ -37,8 +37,8 @@ export async function GET(req: NextRequest) {
     try {
       const messages = await sanity.fetch(query, { userId });
       return NextResponse.json({ messages });
-    } catch (error) {
-      return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+    } catch {
+      // handle error if needed
     }
   } else {
     return NextResponse.json({ error: "Missing user IDs" }, { status: 400 });

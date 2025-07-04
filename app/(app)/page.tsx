@@ -1,18 +1,27 @@
 import PostsList from "@/components/post/PostsList";
-import { TrendingUp, Users, MessageSquare, Clock, Sparkles, ArrowRight, Plus, BookOpen, Heart } from "lucide-react";
+import { Users, Clock, ArrowRight, Plus, BookOpen, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getSubreddits } from "@/sanity/lib/subreddit/getSubreddits";
 import { getUserCommunities } from "@/sanity/lib/subreddit/getUserCommunities";
 import { currentUser } from "@clerk/nextjs/server";
 
+// Define a type for community
+interface Community {
+  _id: string;
+  title?: string;
+  slug: { current: string } | string | null;
+  memberCount?: number;
+  postCount?: number;
+}
+
 export default async function Home() {
   // Fetch all communities and user's joined communities
   const user = await currentUser();
-  const allCommunities = await getSubreddits();
-  const joinedCommunities = user ? await getUserCommunities(user.id) : [];
-  const joinedIds = new Set(joinedCommunities.map((c: any) => c._id));
-  const notJoinedCommunities = allCommunities.filter((c: any) => !joinedIds.has(c._id));
+  const allCommunities: Community[] = await getSubreddits();
+  const joinedCommunities: Community[] = user ? await getUserCommunities(user.id) : [];
+  const joinedIds = new Set(joinedCommunities.map((c) => c._id));
+  const notJoinedCommunities = allCommunities.filter((c) => !joinedIds.has(c._id));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-100">
@@ -72,7 +81,7 @@ export default async function Home() {
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Your Feed</h2>
-                <p className="text-gray-600">Latest posts from communities you've joined</p>
+                <p className="text-gray-600">Latest posts from communities you&apos;ve joined</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -104,7 +113,7 @@ export default async function Home() {
               {notJoinedCommunities.length === 0 ? (
                 <div className="col-span-full text-center text-gray-500">You have joined all available communities!</div>
               ) : (
-                notJoinedCommunities.map((community: any) => (
+                notJoinedCommunities.map((community) => (
                   <div
                     key={community._id}
                     className="min-w-[320px] max-w-xs flex-shrink-0 bg-white rounded-xl p-6 shadow-md border-t-4 border-blue-200 hover:shadow-lg transition-all duration-300"
@@ -118,7 +127,7 @@ export default async function Home() {
                       <span>{community.postCount ? `${community.postCount} posts` : ''}</span>
                     </div>
                     <Link
-                      href={`/community/${community.slug?.current || community.slug}`}
+                      href={`/community/${typeof community.slug === 'string' ? community.slug : community.slug?.current ?? ''}`}
                       className="w-full mt-4 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors block text-center font-medium border border-blue-100"
                     >
                       Join Community

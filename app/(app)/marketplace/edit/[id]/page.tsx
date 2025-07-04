@@ -4,6 +4,27 @@ import { useRouter } from 'next/navigation';
 import { client } from '@/sanity/lib/client';
 import { useUser } from '@clerk/nextjs';
 
+type MarketplaceItem = {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  image?: {
+    asset?: {
+      _id: string;
+      url: string;
+    };
+  };
+  category: string;
+  condition: string;
+  status: string;
+  seller?: {
+    _id: string;
+    username?: string;
+  };
+  createdAt?: string;
+};
+
 async function getMarketplaceItem(id: string) {
   return client.fetch(
     `*[_type == "marketplaceItem" && _id == $id][0]{
@@ -24,12 +45,11 @@ async function getMarketplaceItem(id: string) {
   );
 }
 
-export default function EditMarketplaceItemPage({ params }: { params: any }) {
-  const unwrappedParams = React.use(params) as { id: string };
-  const id = unwrappedParams.id;
+export default async function EditMarketplaceItemPage({ params }: { params: { id: string } }) {
+  const { id } = await params;
   const { user } = useUser();
   const router = useRouter();
-  const [item, setItem] = useState<any>(null);
+  const [item, setItem] = useState<MarketplaceItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     title: '',
@@ -93,8 +113,12 @@ export default function EditMarketplaceItemPage({ params }: { params: any }) {
       } else {
         setError(data.error || 'Failed to update item.');
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Something went wrong.');
+      } else {
+        setError('Something went wrong.');
+      }
     }
   }
 
@@ -112,8 +136,12 @@ export default function EditMarketplaceItemPage({ params }: { params: any }) {
       } else {
         setDeleteError(data.error || 'Failed to delete item.');
       }
-    } catch (err: any) {
-      setDeleteError(err.message || 'Something went wrong.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setDeleteError(err.message || 'Something went wrong.');
+      } else {
+        setDeleteError('Something went wrong.');
+      }
     } finally {
       setDeleting(false);
     }

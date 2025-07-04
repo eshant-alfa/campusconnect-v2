@@ -4,6 +4,7 @@ import { User2, ShoppingBag } from 'lucide-react';
 import { useChatModal } from "@/components/chat/ChatModalContext";
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
+import Image from 'next/image';
 
 function Badge({ children, color, icon }: { children: React.ReactNode; color: string; icon?: React.ReactNode }) {
   return (
@@ -19,7 +20,26 @@ function ImagePlaceholder() {
   );
 }
 
-export default function MarketplaceGrid({ items }: { items: any[] }) {
+type MarketplaceItem = {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  image?: {
+    asset?: {
+      url: string;
+    };
+  };
+  category?: string;
+  condition?: string;
+  status?: string;
+  seller?: {
+    _id: string;
+    username?: string;
+  };
+};
+
+export default function MarketplaceGrid({ items }: { items: MarketplaceItem[] }) {
   const { openChatWithUsernameAndMessage } = useChatModal();
   const { user } = useUser();
 
@@ -54,14 +74,14 @@ export default function MarketplaceGrid({ items }: { items: any[] }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {items.map((item: any) => (
+            {items.map((item) => (
               <div
                 key={item._id}
                 className="group bg-white rounded-2xl shadow-md p-5 flex flex-col hover:shadow-xl hover:border-blue-400 hover:scale-[1.03] transition-all duration-200 min-h-[320px] mb-2"
               >
                 <div className="relative w-full h-36 mb-3 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border border-gray-200 shadow-sm">
                   {item.image && item.image.asset ? (
-                    <img
+                    <Image
                       src={item.image.asset.url}
                       alt={item.title || 'Marketplace item'}
                       className="object-cover rounded-xl w-full h-full shadow-md"

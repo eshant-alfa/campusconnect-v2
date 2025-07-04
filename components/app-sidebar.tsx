@@ -41,7 +41,7 @@ type SidebarData = {
 };
 
 function isSlugObject(slug: unknown): slug is { current: string } {
-  return typeof slug === 'object' && slug !== null && 'current' in slug && typeof (slug as any).current === 'string';
+  return typeof slug === 'object' && slug !== null && 'current' in slug && typeof (slug as { current: unknown }).current === 'string';
 }
 
 export async function AppSidebar({

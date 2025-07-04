@@ -8,6 +8,27 @@ import { client } from '@/sanity/lib/client';
 import { useUser } from '@clerk/nextjs';
 import { useChatModal } from '@/components/chat/ChatModalContext';
 
+type MarketplaceItem = {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  image?: {
+    asset?: {
+      _id: string;
+      url: string;
+    };
+  };
+  category: string;
+  condition: string;
+  status: string;
+  seller?: {
+    _id: string;
+    username?: string;
+  };
+  createdAt: string;
+};
+
 async function getMarketplaceItem(id: string) {
   return client.fetch(
     `*[_type == "marketplaceItem" && _id == $id][0]{
@@ -44,12 +65,11 @@ function timeAgo(dateString: string) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
-export default function MarketplaceItemDetail({ params }: { params: any }) {
-  const unwrappedParams = React.use(params) as { id: string };
-  const id = unwrappedParams.id;
+export default async function MarketplaceItemDetail({ params }: { params: { id: string } }) {
+  const { id } = await params;
   const { user } = useUser();
   const { openChatWithUsernameAndMessage } = useChatModal();
-  const [item, setItem] = React.useState<any>(null);
+  const [item, setItem] = React.useState<MarketplaceItem | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -95,7 +115,7 @@ export default function MarketplaceItemDetail({ params }: { params: any }) {
           <div className="flex-1 flex flex-col gap-3 w-full">
             <div className="flex items-center justify-between gap-2">
               <h1 className="text-2xl font-bold text-gray-900 line-clamp-2">{item.title}</h1>
-              <span className="text-xs text-gray-400 font-light">{timeAgo(item.createdAt)}</span>
+              <span className="text-xs text-gray-400 font-light">{timeAgo(item.createdAt ? item.createdAt : '')}</span>
             </div>
             <div className="flex flex-wrap gap-2 mb-1">
               {item.category && (
@@ -130,7 +150,7 @@ export default function MarketplaceItemDetail({ params }: { params: any }) {
               ) : (
                 <button
                   type="button"
-                  onClick={() => openChatWithUsernameAndMessage(item.seller?.username, 'Is this item still available?')}
+                  onClick={() => openChatWithUsernameAndMessage(item.seller?.username ?? '', 'Is this item still available?')}
                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded-lg font-semibold hover:bg-blue-700 transition text-xs"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /></svg>
