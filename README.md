@@ -1,6 +1,6 @@
 # Campus Connect
 
-Campus Connect is a purpose-built digital platform designed to foster vibrant, supportive, and engaged campus communities. Our mission is to empower students, staff, and organizations to connect, collaborate, and thrive through seamless communication, resource sharing, and community-driven features—all in one place.
+Campus Connect is a purpose-built digital platform designed to foster vibrant, supportive, and engaged campus communities. Our mission is to empower students, staff, and organizations to connect, collaborate, and thrive through seamless communication, resource sharing, and community-driven features all in one place.
 
 ## 🌟 Mission
 
