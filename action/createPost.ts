@@ -8,13 +8,17 @@ interface CreatePostParams {
   title: string;
   body?: string;
   subredditSlug: string;
-  imageBase64?: string;
-  imageFilename?: string;
-  imageContentType?: string;
+  imageField?: {
+    _type: "image";
+    asset: {
+      _type: "reference";
+      _ref: string;
+    };
+  };
 }
 
 export async function createPost(params: CreatePostParams) {
-  const { title, body = "", subredditSlug, imageBase64, imageFilename, imageContentType } = params;
+  const { title, body = "", subredditSlug, imageField } = params;
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -79,16 +83,28 @@ export async function createPost(params: CreatePostParams) {
       console.warn(`Post created with basic moderation only (AI unavailable) - User: ${user.username || user.name}, Title: ${titleToModerate.substring(0, 50)}...`);
     }
 
+    // Convert body text to rich text blocks
+    const bodyBlocks = contentToModerate ?
+      [
+        {
+          _type: "block",
+          children: [
+            {
+              _type: "span",
+              text: contentToModerate,
+            },
+          ],
+        },
+      ] : [];
+
     const post = await adminClient.create({
       _type: "post",
       title: titleToModerate,
-      content: contentToModerate,
+      body: bodyBlocks, // Use body field with rich text blocks
       author: { _type: "reference", _ref: user._id },
       subreddit: { _type: "reference", _ref: subreddit._id },
-      createdAt: new Date().toISOString(),
-      upvotes: 0,
-      downvotes: 0,
-      ...(imageBase64 && { image: imageBase64 }),
+      publishedAt: new Date().toISOString(),
+      ...(imageField && { image: imageField }), // Use the Sanity image object directly
     });
 
     return { success: true, post };

@@ -65,7 +65,7 @@ async function CreatePostPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CreatePostForm />
+              <CreatePostForm subreddit={subreddit} />
             </CardContent>
           </Card>
         </div>

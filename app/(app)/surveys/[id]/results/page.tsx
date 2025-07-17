@@ -21,7 +21,7 @@ interface SurveyResults {
   title: string;
   questions: Array<{
     _key: string;
-    text: string;
+    question: string;
     type: "single" | "multiple";
     options: string[];
     results: Record<string, number>; // option -> count
@@ -174,7 +174,7 @@ export default function SurveyResultsPage() {
                     <PieChart className="w-5 h-5 text-blue-600" />
                     Question {questionIndex + 1}
                   </CardTitle>
-                  <p className="text-lg font-semibold text-gray-900">{q.text}</p>
+                  <p className="text-lg font-semibold text-gray-900">{q.question}</p>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-4">

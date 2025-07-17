@@ -30,7 +30,7 @@ interface Survey {
   };
   questions: Array<{
     _key: string;
-    text: string;
+    question: string;
     type: "single" | "multiple";
     options: string[];
   }>;
@@ -59,7 +59,7 @@ export default function SurveyDetailPage() {
         if (!res.ok) throw new Error("Survey not found");
         const data = await res.json();
         console.log('Fetched survey data:', data);
-        console.log('Questions with keys:', data.questions?.map((q: any) => ({ text: q.text, _key: q._key })));
+        console.log('Questions with keys:', data.questions?.map((q: any) => ({ question: q.question, _key: q._key })));
         setSurvey(data);
         
         // Check if user has already voted (only for authenticated users)
@@ -281,7 +281,7 @@ export default function SurveyDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <p className="text-lg font-semibold text-gray-900 mb-4">{q.text}</p>
+                    <p className="text-lg font-semibold text-gray-900 mb-4">{q.question}</p>
                     <div className="space-y-3">
                       {q.type === "single" ? (
                         (q.options ?? []).map((opt, optIdx) => (

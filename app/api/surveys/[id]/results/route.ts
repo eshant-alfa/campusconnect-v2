@@ -60,7 +60,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         console.log(`Question ${q._key}: total=${total}, results=`, results);
         return {
           _key: q._key,
-          text: q.text,
+          question: q.question,
           type: q.type,
           options: q.options,
           results,

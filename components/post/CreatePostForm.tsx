@@ -11,11 +11,17 @@ import { Label } from "../ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { AlertTriangle, CheckCircle, Upload, X } from "lucide-react";
 import { SubredditCombobox } from "../subreddit/SubredditCombobox";
+import { GetSubredditsQueryResult } from "@/sanity.types";
 
-function CreatePostForm() {
+interface CreatePostFormProps {
+  subreddit: string; // Make this required
+  subreddits?: GetSubredditsQueryResult;
+}
+
+function CreatePostForm({ subreddit, subreddits = [] }: CreatePostFormProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [subreddit, setSubreddit] = useState("");
+  // Remove local subreddit state - use the prop directly
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,7 +97,7 @@ function CreatePostForm() {
   const resetForm = () => {
     setTitle("");
     setBody("");
-    setSubreddit("");
+    // Remove setSubreddit("") - we don't manage subreddit state locally
     setImageFile(null);
     setImagePreview(null);
     setErrorMessage("");
@@ -120,6 +126,17 @@ function CreatePostForm() {
     setImagePreview(null);
   };
 
+  // Upload image to Sanity (like Events do)
+  const uploadImageToSanity = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'image');
+    const res = await fetch('/api/sanity/upload', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('Image upload failed');
+    const data = await res.json();
+    return data.image;
+  };
+
   const handleCreatePost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -138,27 +155,16 @@ function CreatePostForm() {
     setIsLoading(true);
 
     try {
-      let imageBase64: string | null = null;
-      let fileName: string | null = null;
-      let fileType: string | null = null;
-
+      let imageField = null;
       if (imageFile) {
-        const reader = new FileReader();
-        imageBase64 = await new Promise<string>((resolve) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(imageFile);
-        });
-        fileName = imageFile.name;
-        fileType = imageFile.type;
+        imageField = await uploadImageToSanity(imageFile);
       }
 
       const result = await createPost({
         title: title.trim(),
         subredditSlug: subreddit,
         body: body.trim() || undefined,
-        imageBase64: imageBase64 || undefined,
-        imageFilename: fileName || undefined,
-        imageContentType: fileType || undefined,
+        imageField: imageField, // Pass the Sanity image object
       });
 
       resetForm();
@@ -295,25 +301,6 @@ function CreatePostForm() {
                   </span>
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="subreddit" className="text-sm font-medium">
-                Community *
-              </Label>
-              <select
-                id="subreddit"
-                value={subreddit}
-                onChange={(e) => setSubreddit(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              >
-                <option value="">Select a community...</option>
-                <option value="general">General</option>
-                <option value="academics">Academics</option>
-                <option value="events">Events</option>
-                <option value="social">Social</option>
-              </select>
             </div>
 
             <div className="space-y-2">
