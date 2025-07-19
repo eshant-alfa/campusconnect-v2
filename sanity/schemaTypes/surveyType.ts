@@ -50,7 +50,17 @@ export const surveyType = defineType({
       name: 'questions',
       type: 'array',
       of: [defineArrayMember({ type: 'surveyQuestion' })],
-      validation: Rule => Rule.required().min(1),
+      validation: Rule => Rule.required().min(1).custom((questions) => {
+        if (!questions || !Array.isArray(questions)) return true;
+        
+        for (let i = 0; i < questions.length; i++) {
+          const question = questions[i] as { _key?: string };
+          if (!question._key) {
+            return `Question ${i + 1} is missing a unique key. Please save and re-edit this survey.`;
+          }
+        }
+        return true;
+      }),
     }),
     defineField({
       name: 'creator',
@@ -91,6 +101,13 @@ export const surveyQuestionType = defineType({
   type: 'object',
   fields: [
     defineField({
+      name: '_key',
+      type: 'string',
+      hidden: true,
+      readOnly: true,
+      description: 'Unique key for this question (auto-generated)',
+    }),
+    defineField({
       name: 'question',
       type: 'string',
       validation: Rule => Rule.required().min(4),
@@ -115,7 +132,8 @@ export const surveyQuestionType = defineType({
       of: [defineArrayMember({ type: 'string' })],
       hidden: ({ parent }) => parent?.type !== 'single' && parent?.type !== 'multiple',
       validation: Rule => Rule.custom((val, ctx) => {
-        if ((ctx.parent?.type === 'single' || ctx.parent?.type === 'multiple') && (!val || val.length < 2)) {
+        const parent = ctx.parent as { type?: string };
+        if ((parent?.type === 'single' || parent?.type === 'multiple') && (!val || val.length < 2)) {
           return 'At least 2 options required for choice questions.';
         }
         return true;

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ensureSurveyQuestionKeys } from "@/lib/utils";
 import { 
   ArrowLeft, 
   Plus, 
@@ -64,7 +65,13 @@ export default function CreateSurveyPage() {
   const addQuestion = () => {
     setQuestions(qs => [
       ...qs,
-      { question: "", type: "single", options: ["", ""], required: false },
+      { 
+        question: "", 
+        type: "single", 
+        options: ["", ""], 
+        required: false,
+        _key: `question_${Date.now()}_${qs.length}_${Math.random().toString(36).substr(2, 9)}`
+      },
     ]);
   };
 
@@ -142,10 +149,13 @@ export default function CreateSurveyPage() {
     }
     setLoading(true);
     try {
+      // Ensure all questions have unique keys before submission
+      const questionsWithKeys = ensureSurveyQuestionKeys(questions);
+      
       const res = await fetch("/api/surveys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, questions }),
+        body: JSON.stringify({ ...form, questions: questionsWithKeys }),
       });
       if (!res.ok) {
         const data = await res.json();
