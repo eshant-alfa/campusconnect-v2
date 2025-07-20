@@ -6,7 +6,7 @@ import { addOrUpdateUser } from "./addUser";
 interface UserResult {
   _id: string;
   username: string;
-  imageUrl: string;
+  image: string;
   email: string;
 }
 
@@ -23,7 +23,14 @@ const parseUsername = (username: string | null | undefined) => {
 export async function getUser(): Promise<UserResult | { error: string }> {
   try {
     console.log("Getting current user from Clerk");
-    const loggedInUser = await currentUser();
+    let loggedInUser;
+    
+    try {
+      loggedInUser = await currentUser();
+    } catch (error) {
+      console.error("Error getting current user from Clerk:", error);
+      return { error: "User session invalid" };
+    }
 
     if (!loggedInUser) {
       console.log("No user logged in");
@@ -49,15 +56,34 @@ export async function getUser(): Promise<UserResult | { error: string }> {
       const user = {
         _id: existingUser.data._id,
         username: existingUser.data.username!,
-        imageUrl: existingUser.data.imageUrl!,
+        image: typeof existingUser.data.image === 'string' ? existingUser.data.image : '',
         email: existingUser.data.email!,
       };
 
       return user;
     }
 
-    console.log("User not found in database - manual creation required");
-    return { error: "User not found in database. Please create a user profile first." };
+    // User doesn't exist, create them automatically
+    console.log("User not found in database - creating new user");
+    try {
+      const newUser = await addOrUpdateUser({
+        clerkId: loggedInUser.id,
+        username: loggedInUser.username || parseUsername(loggedInUser.firstName),
+        email: loggedInUser.emailAddresses?.[0]?.emailAddress || '',
+        image: loggedInUser.imageUrl || '',
+      });
+
+      console.log(`New user created with ID: ${newUser._id}`);
+      return {
+        _id: newUser._id,
+        username: newUser.username!,
+        image: typeof newUser.image === 'string' ? newUser.image : '',
+        email: newUser.email!,
+      };
+    } catch (createError) {
+      console.error("Error creating user:", createError);
+      return { error: "Failed to create user profile" };
+    }
   } catch (error) {
     console.error("Error getting user:", error);
     return { error: "Failed to get user" };

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const conversations = await client.fetch(
       `*[_type == "conversation" && $userId in participants[]._ref] | order(updatedAt desc){
         _id,
-        participants[]->{_id, name, username, profileImage, clerkId},
+        participants[]->{_id, name, username, image, clerkId},
         lastMessage,
         updatedAt,
         "unreadCount": count(*[_type == "message" && conversation._ref == ^._id && isRead == false && sender._ref != $userId])

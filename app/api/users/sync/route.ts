@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const clerkId = user.id;
     const username = user.username || user.id;
     const email = user.emailAddresses?.[0]?.emailAddress || '';
-    const imageUrl = user.imageUrl || '';
+    const image = user.imageUrl || '';
 
     console.log('UserSync API: User data extracted:', { clerkId, username, email: email ? '***' : 'none' });
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       clerkId,
       username,
       email,
-      imageUrl,
+      image,
     });
     
     console.log('UserSync API: Successfully synced to Sanity:', sanityUser._id);

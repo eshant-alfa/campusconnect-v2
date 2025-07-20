@@ -61,8 +61,8 @@ export default function UserSearchModal({ onSelectUser }: UserSearchModalProps) 
               onClick={() => onSelectUser(user)}
               aria-label={`Start conversation with ${user.username}`}
             >
-              {user.profileImage ? (
-                <Image src={user.profileImage} alt={user.username} width={40} height={40} className="rounded-full object-cover" />
+              {user.image ? (
+                <Image src={user.image} alt={user.username} width={40} height={40} className="rounded-full object-cover" />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-bold text-lg">
                   {user.username?.charAt(0).toUpperCase() || "U"}

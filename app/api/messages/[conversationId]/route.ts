@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { client } from '@/sanity/lib/client';
 
-export async function GET(request: NextRequest, context: { params: { conversationId: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ conversationId: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, context: { params: { conversatio
         content,
         sentAt,
         isRead,
-        sender->{_id, name, username, profileImage, clerkId}
+        sender->{_id, name, username, image, clerkId}
       }`,
       { id: conversationId }
     );

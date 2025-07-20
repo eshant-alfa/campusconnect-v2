@@ -17,7 +17,7 @@ export default function UsernameDisplay({ clerkId, fallback }: UsernameDisplayPr
       .then((data) => {
         if (data.user) {
           setUsername(data.user.username || null);
-          setImageUrl(data.user.imageUrl || null);
+          setImageUrl(data.user.image || null);
         }
       });
   }, [clerkId]);
@@ -26,7 +26,7 @@ export default function UsernameDisplay({ clerkId, fallback }: UsernameDisplayPr
   if (!username) return <span>{fallback || "Anonymous"}</span>;
   return (
     <span className="flex items-center gap-2">
-      {imageUrl && (
+      {imageUrl && typeof imageUrl === 'string' && imageUrl.startsWith('http') && (
         <img src={imageUrl} alt={username} className="w-6 h-6 rounded-full object-cover" />
       )}
       {username}

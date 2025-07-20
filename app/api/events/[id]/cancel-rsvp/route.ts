@@ -5,9 +5,9 @@ import { getAuth } from '@clerk/nextjs/server';
 // POST /api/events/[id]/cancel-rsvp — Cancel RSVP (auth required)
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   const { userId } = getAuth(req);
 
   if (!userId) {

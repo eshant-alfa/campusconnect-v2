@@ -44,10 +44,7 @@ export async function POST(
           role,
           status
         },
-        approvalQueue[]{
-          user->{_id, clerkId},
-          requestedAt
-        }
+        approvalQueue
       }`,
       { slug }
     );
@@ -62,7 +59,8 @@ export async function POST(
       name: community.name,
       type: community.type,
       membersCount: community.members?.length || 0,
-      approvalQueueCount: community.approvalQueue?.length || 0
+      approvalQueueCount: community.approvalQueue?.length || 0,
+      approvalQueue: community.approvalQueue
     });
 
     // Check if user is already a member
@@ -110,6 +108,7 @@ export async function POST(
       try {
         const updatedCommunity = await adminClient
           .patch(community._id)
+          .setIfMissing({ approvalQueue: [] })
           .append('approvalQueue', [approvalEntry])
           .commit();
 

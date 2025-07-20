@@ -44,8 +44,17 @@ export async function AppSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   // TODO: get all subreddits from sanity
   const subreddits = await getSubreddits();
-  const user = await getUser();
-  const userId = (user && "_id" in user) ? user._id : null;
+  
+  let user = null;
+  let userId = null;
+  
+  try {
+    user = await getUser();
+    userId = (user && "_id" in user) ? user._id : null;
+  } catch (error) {
+    console.error("Error getting user in AppSidebar:", error);
+    // Continue without user - sidebar will show without user-specific content
+  }
 
   const myCommunities = userId
     ? subreddits.filter((sub: any) =>

@@ -3,14 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { adminClient } from "@/sanity/lib/adminClient";
 
-export async function GET(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function GET(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   console.log('Pending API called for slug:', slug);
 
@@ -33,14 +27,18 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
   const community = await adminClient.fetch(
     `*[_type == "subreddit" && (slug.current == $slug || title == $title)][0]{
       _id,
+      title,
+      type,
       members[]{user->{_id, username, clerkId}, role, status},
-      approvalQueue[]{user->{_id, username, clerkId, imageUrl}, requestedAt}
+      approvalQueue[]{user->{_id, username, clerkId, image}, requestedAt}
     }`,
     { slug, title: slug }
   );
   if (!community) return NextResponse.json({ error: "Community not found" }, { status: 404 });
 
   console.log('Community found:', community._id);
+  console.log('Community title:', community.title);
+  console.log('Community type:', community.type);
   console.log('Community members count:', community.members?.length || 0);
   console.log('Approval queue count:', community.approvalQueue?.length || 0);
   console.log('Raw community data:', JSON.stringify(community, null, 2));
@@ -53,9 +51,10 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
   console.log('Is moderator:', isMod);
   if (!isMod) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  // Return approvalQueue with user info
+  // Return approvalQueue with user info (handle null case)
   const result = { pending: community.approvalQueue || [] };
   console.log('Returning pending count:', result.pending.length);
+  console.log('Pending data:', JSON.stringify(result.pending, null, 2));
   
   const response = NextResponse.json(result);
   response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');

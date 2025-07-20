@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     // Find sender's Sanity user
     const sender = await client.fetch(
-      `*[_type == "user" && clerkId == $clerkId][0]{_id, name, username, profileImage}`,
+      `*[_type == "user" && clerkId == $clerkId][0]{_id, name, username, image}`,
       { clerkId: userId }
     );
     if (!sender) {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const conversation = await client.fetch(
       `*[_type == "conversation" && _id == $id][0]{
         _id,
-        participants[]->{_id, clerkId, name, username, profileImage}
+        participants[]->{_id, clerkId, name, username, image}
       }`,
       { id: conversationId }
     );

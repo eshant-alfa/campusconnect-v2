@@ -7,9 +7,8 @@ import { client } from "@/sanity/lib/client";
 
 export async function POST(
   req: NextRequest,
-  context: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
-  // ✅ FIX
   const { slug } = await context.params;
   if (!slug) {
     return NextResponse.json({ error: "Missing slug" }, { status: 400 });
@@ -40,7 +39,7 @@ export async function POST(
     `*[_type == 'subreddit' && (slug.current == $slug || title == $title)][0]{
       _id,
       members[]{user->{_id}, role, status},
-      approvalQueue[]{user->{_id, clerkId, username, email, imageUrl}, requestedAt}
+      approvalQueue[]{user->{_id, clerkId, username, email, image}, requestedAt}
     }`,
     { slug, title: slug }
   );
@@ -91,7 +90,7 @@ export async function POST(
   const updatedCommunity = await adminClient.fetch(
     `*[_type == 'subreddit' && _id == $id][0]{
       _id,
-      approvalQueue[]{user->{_id, username, clerkId, email, imageUrl}, requestedAt}
+      approvalQueue[]{user->{_id, username, clerkId, email, image}, requestedAt}
     }`,
     { id: community._id }
   );

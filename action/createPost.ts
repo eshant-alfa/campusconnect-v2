@@ -35,14 +35,25 @@ export async function createPost(params: CreatePostParams) {
       throw new Error("User not found");
     }
 
-    // Find subreddit by slug
+    // Find subreddit by slug and check if user is a member
     const subreddit = await adminClient.fetch(
-      `*[_type == "subreddit" && slug.current == $subredditSlug][0]{_id, name, slug}`,
-      { subredditSlug }
+      `*[_type == "subreddit" && slug.current == $subredditSlug][0]{
+        _id, 
+        name, 
+        slug,
+        "isMember": count(members[user._ref == $userId && status == "active"]) > 0,
+        "userRole": members[user._ref == $userId][0].role
+      }`,
+      { subredditSlug, userId: user._id }
     );
 
     if (!subreddit) {
-      throw new Error("Subreddit not found");
+      throw new Error("Community not found");
+    }
+
+    // Check if user is a member of the community
+    if (!subreddit.isMember) {
+      throw new Error("You must be a member of this community to create posts. Please join the community first.");
     }
 
     const titleToModerate = title.trim();

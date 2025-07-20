@@ -1,4 +1,3 @@
-import { Flag } from "lucide-react";
 import type { StructureResolver } from "sanity/structure";
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
@@ -10,13 +9,6 @@ export const structure: StructureResolver = (S) =>
       // add reported section
       S.listItem()
         .title("Reported")
-        .icon(() => {
-          return (
-            <span style={{ fontWeight: "bold", color: "red" }}>
-              <Flag />
-            </span>
-          );
-        })
         .child(
           S.list()
             .title("Reported Content to be reviewed")

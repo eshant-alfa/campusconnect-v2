@@ -2,14 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 
-export async function GET(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function GET(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ status: "none" });
@@ -28,11 +22,17 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
   );
   if (!community) return NextResponse.json({ status: "none" });
 
+  // Check if user is an active member
   const member = community.members?.find((m: any) => m.user && m.user._ref === sanityUserId && m.status === "active");
   if (member) return NextResponse.json({ status: "active" });
 
+  // Check if user is in approval queue
   const pending = community.approvalQueue?.find((q: any) => q.user && q.user._ref === sanityUserId);
   if (pending) return NextResponse.json({ status: "pending" });
+
+  // Check if user is a pending member (legacy)
+  const pendingMember = community.members?.find((m: any) => m.user && m.user._ref === sanityUserId && m.status === "pending");
+  if (pendingMember) return NextResponse.json({ status: "pending" });
 
   return NextResponse.json({ status: "none" });
 } 

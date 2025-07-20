@@ -9,97 +9,78 @@
  * The issue: params must be awaited before destructuring in Next.js 15
  */
 
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
-const API_DIR = './app/api';
-
-function findApiFiles(dir: string): string[] {
-  const files: string[] = [];
-  
-  if (fs.existsSync(dir)) {
-    const items = fs.readdirSync(dir);
-    
-    for (const item of items) {
-      const fullPath = path.join(dir, item);
-      const stat = fs.statSync(fullPath);
-      
-      if (stat.isDirectory()) {
-        files.push(...findApiFiles(fullPath));
-      } else if (item === 'route.ts' || item === 'route.js') {
-        files.push(fullPath);
-      }
-    }
-  }
-  
-  return files;
-}
-
-function fixParamsInFile(filePath: string): boolean {
+// Function to fix params in a file
+function fixParamsInFile(filePath: string): void {
   try {
     let content = fs.readFileSync(filePath, 'utf8');
     let modified = false;
-    
-    // Fix type annotation: { params: { ... } } -> { params: Promise<{ ... }> }
-    const typePattern = /params\s*:\s*\{([^}]+)\}/g;
-    content = content.replace(typePattern, (match, paramsContent) => {
-      modified = true;
-      return `params: Promise<{${paramsContent}}>`;
+
+    // Fix simple params patterns
+    const patterns = [
+      // Fix: { params: { id: string } } -> { params: Promise<{ id: string }> }
+      {
+        regex: /context: \{ params: \{ ([^}]+) \}/g,
+        replacement: 'context: { params: Promise<{ $1 }> }'
+      },
+      // Fix: { params: { slug: string } } -> { params: Promise<{ slug: string }> }
+      {
+        regex: /\{ params: \{ ([^}]+) \}/g,
+        replacement: '{ params: Promise<{ $1 }> }'
+      },
+      // Fix: const { id } = params; -> const { id } = await params;
+      {
+        regex: /const \{ ([^}]+) \} = params;/g,
+        replacement: 'const { $1 } = await params;'
+      },
+      // Fix: const { slug } = context.params; -> const { slug } = await context.params;
+      {
+        regex: /const \{ ([^}]+) \} = context\.params;/g,
+        replacement: 'const { $1 } = await context.params;'
+      }
+    ];
+
+    patterns.forEach(pattern => {
+      const newContent = content.replace(pattern.regex, pattern.replacement);
+      if (newContent !== content) {
+        content = newContent;
+        modified = true;
+      }
     });
-    
-    // Fix destructuring: const { ... } = params; -> const { ... } = await params;
-    const destructurePattern = /const\s*\{([^}]+)\}\s*=\s*params\s*;/g;
-    content = content.replace(destructurePattern, (match, destructureContent) => {
-      modified = true;
-      return `const {${destructureContent}} = await params;`;
-    });
-    
+
     if (modified) {
       fs.writeFileSync(filePath, content, 'utf8');
       console.log(`✅ Fixed: ${filePath}`);
-      return true;
     }
-    
-    return false;
   } catch (error) {
-    console.error(`❌ Error fixing ${filePath}:`, error);
-    return false;
+    console.error(`❌ Error processing ${filePath}:`, error);
   }
 }
 
-function main() {
-  console.log('🔍 Finding API route files...');
-  const apiFiles = findApiFiles(API_DIR);
+// Function to recursively find and fix API route files
+function fixApiRoutes(dir: string): void {
+  const files = fs.readdirSync(dir);
   
-  console.log(`📁 Found ${apiFiles.length} API route files`);
-  
-  let fixedCount = 0;
-  
-  for (const file of apiFiles) {
-    if (fixParamsInFile(file)) {
-      fixedCount++;
-    }
-  }
-  
-  console.log(`\n🎉 Fixed ${fixedCount} files with params issues`);
-  
-  if (fixedCount > 0) {
-    console.log('\n📝 Manual Review Required:');
-    console.log('Please review the following files to ensure the fixes are correct:');
+  files.forEach(file => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
     
-    for (const file of apiFiles) {
-      const content = fs.readFileSync(file, 'utf8');
-      if (content.includes('await params')) {
-        console.log(`   - ${file}`);
-      }
+    if (stat.isDirectory()) {
+      fixApiRoutes(filePath);
+    } else if (file.endsWith('.ts') && file.includes('route.ts')) {
+      fixParamsInFile(filePath);
     }
-  } else {
-    console.log('\n✅ No files needed fixing!');
-  }
-  
-  console.log('\n💡 Manual Fix Pattern:');
-  console.log('1. Change type: { params: { id: string } } -> { params: Promise<{ id: string }> }');
-  console.log('2. Change destructuring: const { id } = params; -> const { id } = await params;');
+  });
 }
 
-main(); 
+// Main execution
+const apiDir = path.join(process.cwd(), 'app', 'api');
+if (fs.existsSync(apiDir)) {
+  console.log('🔧 Fixing Next.js 15 params issues in API routes...');
+  fixApiRoutes(apiDir);
+  console.log('✅ Done fixing API routes!');
+} else {
+  console.error('❌ API directory not found:', apiDir);
+} 

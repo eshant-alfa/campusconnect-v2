@@ -4,7 +4,7 @@ import { client } from '@/sanity/lib/client';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { clerkId: string } }
+  context: { params: Promise<{ clerkId: string }> }
 ) {
   // ✅ FIX: await context.params
   const { clerkId } = await context.params;
@@ -18,7 +18,7 @@ export async function GET(
       `*[_type == "user" && clerkId == $clerkId][0]{
         _id,
         username,
-        imageUrl,
+        image,
         email
       }`,
       { clerkId }
@@ -32,7 +32,7 @@ export async function GET(
     return NextResponse.json({
       _id: user._id,
       username: user.username,
-      imageUrl: user.imageUrl,
+      image: user.image || '',
       email: user.email
     });
 

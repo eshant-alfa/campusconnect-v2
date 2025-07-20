@@ -1,6 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { UserIcon } from "lucide-react";
-import Image from "next/image";
+import { UserIcon } from "@sanity/icons";
 
 export const userType = defineType({
   name: "user",
@@ -59,10 +58,12 @@ export const userType = defineType({
       media: "image",
     },
     prepare({ title, media }) {
+      // Defensive: Only use media if it's a valid object (Sanity image), not a string
+      const isValidMedia = media && typeof media === 'object' && !Array.isArray(media);
       return {
         title,
-        media: media || <UserIcon />,
+        media: isValidMedia ? media : UserIcon,
       };
     },
   },
-});
+}); 

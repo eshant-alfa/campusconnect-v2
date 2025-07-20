@@ -1,11 +1,11 @@
 import { defineField, defineType } from "sanity";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowUpIcon, ArrowDownIcon } from "@sanity/icons";
 
 export const voteType = defineType({
   name: "vote",
   title: "Vote",
   type: "document",
-  icon: ArrowUp,
+  icon: ArrowUpIcon,
   description: "Tracks user votes on posts and comments",
   fields: [
     defineField({
@@ -26,6 +26,7 @@ export const voteType = defineType({
           { title: "Upvote", value: "upvote" },
           { title: "Downvote", value: "downvote" },
         ],
+        layout: "radio",
       },
       validation: (rule) => rule.required(),
     }),
@@ -64,7 +65,7 @@ export const voteType = defineType({
       return {
         title: postTitle || commentTitle,
         subtitle: username,
-        media: voteType === "upvote" ? <ArrowUp /> : <ArrowDown />,
+        media: voteType === "upvote" ? ArrowUpIcon : ArrowDownIcon,
       };
     },
   },
@@ -79,4 +80,4 @@ export const voteType = defineType({
       }
       return true;
     }),
-});
+}); 

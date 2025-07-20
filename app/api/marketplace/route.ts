@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         category,
         condition,
         images,
-        seller->{_id, username, clerkId, imageUrl},
+        seller->{_id, username, clerkId, image},
         createdAt,
         updatedAt
       }`,

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createPost } from "@/action/createPost";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -16,9 +17,10 @@ import { GetSubredditsQueryResult } from "@/sanity.types";
 interface CreatePostFormProps {
   subreddit: string; // Make this required
   subreddits?: GetSubredditsQueryResult;
+  isMember?: boolean; // Add membership check
 }
 
-function CreatePostForm({ subreddit, subreddits = [] }: CreatePostFormProps) {
+function CreatePostForm({ subreddit, subreddits = [], isMember = true }: CreatePostFormProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   // Remove local subreddit state - use the prop directly
@@ -188,7 +190,7 @@ function CreatePostForm({ subreddit, subreddits = [] }: CreatePostFormProps) {
     }
   };
 
-  const isSubmitDisabled = isPending || !isSignedIn || !title.trim() || !subreddit || isContentSafe === false || isChecking;
+  const isSubmitDisabled = isPending || !isSignedIn || !title.trim() || !subreddit || isContentSafe === false || isChecking || !isMember;
 
   if (!isSignedIn) {
     return (
@@ -253,6 +255,32 @@ function CreatePostForm({ subreddit, subreddits = [] }: CreatePostFormProps) {
           {errorMessage && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700">{errorMessage}</p>
+            </div>
+          )}
+
+          {!isMember && (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                  </div>
+                </div>
+                <div className="ml-3 flex-1">
+                  <h4 className="text-sm font-semibold text-yellow-800 mb-1">
+                    Membership Required
+                  </h4>
+                  <p className="text-sm text-yellow-700 mb-2">
+                    You must be a member of this community to create posts.
+                  </p>
+                  <Link
+                    href={`/community/${subreddit}`}
+                    className="inline-flex items-center px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700 transition-colors"
+                  >
+                    Join Community
+                  </Link>
+                </div>
+              </div>
             </div>
           )}
 

@@ -4,7 +4,14 @@ import Post from "./Post";
 
 async function PostsList() {
   const posts = await getPosts();
-  const user = await currentUser();
+  let user = null;
+  
+  try {
+    user = await currentUser();
+  } catch (error) {
+    console.error("Error getting current user in PostsList:", error);
+    // Continue without user
+  }
 
   return (
     <div className="space-y-4">

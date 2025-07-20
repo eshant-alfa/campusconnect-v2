@@ -4,14 +4,8 @@ import { adminClient } from "@/sanity/lib/adminClient";
 import { client } from "@/sanity/lib/client";
 import { addOrUpdateUser } from "@/sanity/lib/user/addUser";
 
-export async function POST(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function POST(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   console.log('Leave request for slug:', slug);
 
@@ -22,7 +16,7 @@ export async function POST(req: NextRequest, context: { params: { slug: string }
 
   // Fetch Sanity user by Clerk ID
   let sanityUser = await client.fetch(
-    `*[_type == "user" && clerkId == $clerkId][0]{_id, username, email, imageUrl}`,
+          `*[_type == "user" && clerkId == $clerkId][0]{_id, username, email, image}`,
     { clerkId: userId }
   );
   console.log('Sanity user lookup result:', sanityUser);
@@ -36,7 +30,7 @@ export async function POST(req: NextRequest, context: { params: { slug: string }
       clerkId: userId,
       username: `user_${userId.slice(-6)}`,
       email: `user_${userId.slice(-6)}@example.com`,
-      imageUrl: "",
+              image: "",
     });
     sanityUserId = newUser._id;
     console.log('New user created with ID:', sanityUserId);

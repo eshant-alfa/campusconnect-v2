@@ -3,14 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { adminClient } from "@/sanity/lib/adminClient";
 
-export async function POST(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function POST(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

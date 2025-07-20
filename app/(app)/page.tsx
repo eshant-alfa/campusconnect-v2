@@ -20,8 +20,16 @@ export default async function Home() {
   const communities = (await getSubreddits()).slice(0, 4) as CommunityWithMembers[];
 
   // Check if user is a member of any community
-  const user = await currentUser();
+  let user = null;
   let isMemberOfAny = false;
+  
+  try {
+    user = await currentUser();
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    // Continue without user - they'll need to sign in again
+  }
+  
   if (user) {
     const sanityUser = await client.fetch(
       `*[_type == "user" && clerkId == $clerkId][0]{_id}`,

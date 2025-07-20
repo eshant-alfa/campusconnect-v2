@@ -5,14 +5,8 @@ import { adminClient } from '@/sanity/lib/adminClient';
 import { client } from '@/sanity/lib/client';
 
 // GET: Fetch the welcome message for a community
-export async function GET(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function GET(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
   
   try {
     const subreddit = await getSubredditBySlug(slug);
@@ -27,14 +21,8 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
 }
 
 // PUT: Set or update the welcome message for a community
-export async function PUT(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function PUT(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   try {
     // Check authentication

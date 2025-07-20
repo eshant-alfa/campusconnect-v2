@@ -326,6 +326,36 @@
     }
   },
   {
+    "name": "surveyResponseEntry",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "surveyResponseEntry"
+          }
+        },
+        "key": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "value": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        }
+      }
+    }
+  },
+  {
     "name": "surveyResponse",
     "type": "document",
     "attributes": {
@@ -420,38 +450,23 @@
         },
         "optional": true
       },
-      "answers": {
+      "responses": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
           "of": {
             "type": "object",
             "attributes": {
-              "questionId": {
+              "_key": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
-                },
-                "optional": true
-              },
-              "answer": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string"
-                },
-                "optional": true
+                }
               }
             },
             "rest": {
-              "type": "object",
-              "attributes": {
-                "_key": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string"
-                  }
-                }
-              }
+              "type": "inline",
+              "name": "surveyResponseEntry"
             }
           }
         },

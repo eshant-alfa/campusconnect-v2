@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
     // Find both users in Sanity
     const users = await client.fetch(
-      `*[_type == "user" && (clerkId == $userA || clerkId == $userB)]{_id, clerkId, name, username, profileImage}`,
+      `*[_type == "user" && (clerkId == $userA || clerkId == $userB)]{_id, clerkId, name, username, image}`,
       { userA: userId, userB: participantClerkId }
     );
     if (users.length !== 2) {

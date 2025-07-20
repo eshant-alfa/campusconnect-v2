@@ -76,7 +76,7 @@ export default function ConversationList({ selectedConversation, setSelectedConv
             >
               <div className="relative flex-shrink-0">
                 <Avatar className="w-12 h-12">
-                  <AvatarImage src={other?.profileImage} alt={other?.name} />
+                  <AvatarImage src={typeof other?.image === 'string' && other?.image.startsWith('http') ? other?.image : ''} alt={other?.name} />
                   <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold text-lg">
                     {other?.name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>

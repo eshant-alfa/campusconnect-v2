@@ -3,13 +3,13 @@ import { adminClient } from '@/sanity/lib/adminClient';
 import { getMarketplaceItemById } from '@/sanity/lib/marketplace/getMarketplaceItemById';
 import { currentUser } from '@clerk/nextjs/server';
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await currentUser();
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 401 });
   }
 
-  const itemId = params.id;
+  const { id: itemId } = await params;
   const item = await getMarketplaceItemById(itemId);
   if (!item) {
     return NextResponse.json({ error: 'Marketplace item not found' }, { status: 404 });

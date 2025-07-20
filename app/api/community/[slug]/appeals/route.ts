@@ -19,7 +19,7 @@ export async function GET(
         reason,
         status,
         createdAt,
-        user->{_id, name, username, profileImage}
+        user->{_id, name, username, image}
       }`,
       { slug }
     );

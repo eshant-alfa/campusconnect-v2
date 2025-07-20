@@ -15,7 +15,7 @@ interface ConversationPartner {
   _id: string;
   name: string;
   username: string;
-  profileImage?: string;
+  image?: string;
   clerkId: string;
 }
 
@@ -214,7 +214,7 @@ export default function MessageThread({ conversationId, currentUserId }: Message
           <>
             <div className="relative">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={conversationPartner.profileImage} alt={conversationPartner.username} />
+                <AvatarImage src={typeof conversationPartner.image === 'string' && conversationPartner.image.startsWith('http') ? conversationPartner.image : ''} alt={conversationPartner.username} />
                 <AvatarFallback className="bg-blue-100 text-blue-700 text-sm font-semibold">
                   {conversationPartner?.username?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
@@ -248,7 +248,7 @@ export default function MessageThread({ conversationId, currentUserId }: Message
               <div key={msg._id} className={`flex w-full ${mine ? 'justify-end' : 'justify-start'}`}>
                 {!mine && showAvatar && (
                   <Avatar className="w-8 h-8 mr-2 mt-auto">
-                    <AvatarImage src={msg.sender?.profileImage} alt={msg.sender?.name} />
+                    <AvatarImage src={typeof msg.sender?.image === 'string' && msg.sender?.image.startsWith('http') ? msg.sender?.image : ''} alt={msg.sender?.name} />
                     <AvatarFallback className="bg-gray-100 text-gray-700 text-sm font-semibold">
                       {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
@@ -269,7 +269,7 @@ export default function MessageThread({ conversationId, currentUserId }: Message
                 </div>
                 {mine && showAvatar && (
                   <Avatar className="w-8 h-8 ml-2 mt-auto">
-                    <AvatarImage src={msg.sender?.profileImage} alt={msg.sender?.name} />
+                    <AvatarImage src={typeof msg.sender?.image === 'string' && msg.sender?.image.startsWith('http') ? msg.sender?.image : ''} alt={msg.sender?.name} />
                     <AvatarFallback className="bg-blue-100 text-blue-700 text-sm font-semibold">
                       {msg.sender?.name?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
@@ -283,7 +283,7 @@ export default function MessageThread({ conversationId, currentUserId }: Message
         {isTyping && (
           <div className="flex items-end gap-2 max-w-[70%]">
             <Avatar className="w-8 h-8">
-              <AvatarImage src={conversationPartner?.profileImage} alt={conversationPartner?.name} />
+              <AvatarImage src={typeof conversationPartner?.image === 'string' && conversationPartner?.image.startsWith('http') ? conversationPartner?.image : ''} alt={conversationPartner?.name} />
               <AvatarFallback className="bg-gray-100 text-gray-700 text-sm font-semibold">
                 {conversationPartner?.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>

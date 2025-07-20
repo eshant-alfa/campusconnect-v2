@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserPlus, UserX, Loader2 } from "lucide-react";
+import { UserPlus, UserX, Loader2, RefreshCw } from "lucide-react";
 
 interface PendingApprovalsProps {
   slug: string;
@@ -40,7 +40,11 @@ export default function PendingApprovals({ slug }: PendingApprovalsProps) {
 
   useEffect(() => {
     fetchPending();
-    // Optionally, add polling or Pusher for real-time updates
+    
+    // Set up polling to refresh the list every 10 seconds
+    const interval = setInterval(fetchPending, 10000);
+    
+    return () => clearInterval(interval);
   }, [slug]);
 
   const handleApprove = async (userId: string) => {
@@ -140,16 +144,32 @@ export default function PendingApprovals({ slug }: PendingApprovalsProps) {
 
   return (
     <div className="px-6 pb-6">
-      <div className="flex items-center gap-2 mb-3">
-        <UserPlus className="w-5 h-5 text-blue-600" />
-        <h3 className="text-lg font-bold text-blue-900">Pending Approvals</h3>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <UserPlus className="w-5 h-5 text-blue-600" />
+          <h3 className="text-lg font-bold text-blue-900">Pending Approvals</h3>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={fetchPending}
+          disabled={loading}
+          className="text-xs"
+        >
+          {loading ? (
+            <Loader2 className="w-3 h-3 animate-spin mr-1" />
+          ) : (
+            <RefreshCw className="w-3 h-3 mr-1" />
+          )}
+          Refresh
+        </Button>
       </div>
       <div className="space-y-3">
         {pending.map((req) => (
           <div key={req.user._id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
             <div className="flex items-center gap-3 mb-2">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={req.user.imageUrl} alt={req.user.username} />
+                <AvatarImage src={typeof req.user.image === 'string' && req.user.image.startsWith('http') ? req.user.image : ''} alt={req.user.username} />
                 <AvatarFallback className="text-xs">
                   {req.user.username?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>

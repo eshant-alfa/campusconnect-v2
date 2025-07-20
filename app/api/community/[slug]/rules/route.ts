@@ -5,14 +5,8 @@ import { adminClient } from '@/sanity/lib/adminClient';
 import { client } from '@/sanity/lib/client';
 
 // GET: Fetch all rules for a community
-export async function GET(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function GET(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
   try {
     const subreddit = await getSubredditBySlug(slug);
     if (!subreddit) {
@@ -26,14 +20,8 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
 }
 
 // POST: Add a new rule to the community
-export async function POST(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function POST(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   try {
     // Check authentication
@@ -92,14 +80,8 @@ export async function POST(req: NextRequest, context: { params: { slug: string }
 }
 
 // PUT: Update a rule in the community
-export async function PUT(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function PUT(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   try {
     // Check authentication
@@ -162,14 +144,8 @@ export async function PUT(req: NextRequest, context: { params: { slug: string } 
 }
 
 // DELETE: Remove a rule from the community
-export async function DELETE(req: NextRequest, context: { params: { slug: string } } | { params: Promise<{ slug: string }> }) {
-  let params: { slug: string };
-  if (context.params instanceof Promise) {
-    params = await context.params;
-  } else {
-    params = context.params;
-  }
-  const { slug } = params;
+export async function DELETE(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
 
   try {
     // Check authentication

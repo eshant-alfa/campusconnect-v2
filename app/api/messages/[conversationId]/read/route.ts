@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { adminClient } from '@/sanity/lib/adminClient';
 import { client } from '@/sanity/lib/client';
 
-export async function POST(request: NextRequest, context: { params: { conversationId: string } }) {
+export async function POST(request: NextRequest, context: { params: Promise<{ conversationId: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) {

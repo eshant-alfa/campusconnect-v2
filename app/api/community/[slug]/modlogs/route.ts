@@ -4,9 +4,8 @@ import { adminClient } from '@/sanity/lib/adminClient';
 import { v4 as uuidv4 } from 'uuid';
 
 // GET: Fetch moderation logs for a community
-export async function GET(req: NextRequest, context: { params: { slug: string } }) {
-  const { params } = await context;
-  const { slug } = params;
+export async function GET(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
   try {
     const subreddit = await getSubredditBySlug(slug);
     if (!subreddit) {
@@ -19,9 +18,8 @@ export async function GET(req: NextRequest, context: { params: { slug: string } 
 }
 
 // POST: Add a new moderation log entry
-export async function POST(req: NextRequest, context: { params: { slug: string } }) {
-  const { params } = await context;
-  const { slug } = params;
+export async function POST(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
   try {
     const subreddit = await getSubredditBySlug(slug);
     if (!subreddit) {

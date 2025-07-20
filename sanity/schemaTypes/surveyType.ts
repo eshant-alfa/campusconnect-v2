@@ -50,17 +50,7 @@ export const surveyType = defineType({
       name: 'questions',
       type: 'array',
       of: [defineArrayMember({ type: 'surveyQuestion' })],
-      validation: Rule => Rule.required().min(1).custom((questions) => {
-        if (!questions || !Array.isArray(questions)) return true;
-        
-        for (let i = 0; i < questions.length; i++) {
-          const question = questions[i] as { _key?: string };
-          if (!question._key) {
-            return `Question ${i + 1} is missing a unique key. Please save and re-edit this survey.`;
-          }
-        }
-        return true;
-      }),
+      validation: Rule => Rule.required().min(1),
     }),
     defineField({
       name: 'creator',
@@ -100,13 +90,6 @@ export const surveyQuestionType = defineType({
   title: 'Survey Question',
   type: 'object',
   fields: [
-    defineField({
-      name: '_key',
-      type: 'string',
-      hidden: true,
-      readOnly: true,
-      description: 'Unique key for this question (auto-generated)',
-    }),
     defineField({
       name: 'question',
       type: 'string',

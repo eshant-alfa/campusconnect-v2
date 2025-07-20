@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         category,
         condition,
         images,
-        seller->{_id, username, clerkId, imageUrl},
+        seller->{_id, username, clerkId, image},
         createdAt,
         updatedAt
       }`,

@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header/Header";
 import { SanityLive } from "@/sanity/lib/live";
 import UserSync from '@/components/UserSync';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,19 +35,21 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SidebarProvider>
-            <AppSidebar />
+          <ErrorBoundary>
+            <SidebarProvider>
+              <AppSidebar />
 
-            <SidebarInset>
-              <Header />
+              <SidebarInset>
+                <Header />
 
-              <UserSync />
+                <UserSync />
 
-              <div className="flex flex-col">{children}</div>
-            </SidebarInset>
-          </SidebarProvider>
+                <div className="flex flex-col">{children}</div>
+              </SidebarInset>
+            </SidebarProvider>
 
-          <SanityLive />
+            <SanityLive />
+          </ErrorBoundary>
         </body>
       </html>
     </ClerkProvider>

@@ -3,8 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { adminClient } from "@/sanity/lib/adminClient";
 import { client } from "@/sanity/lib/client";
 
-export async function POST(req: NextRequest, context: { params: { slug: string } }) {
-  const { slug } = context.params;
+export async function POST(req: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { userToDenyId } = await req.json();
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, context: { params: { slug: string }
     `*[_type == 'subreddit' && (slug.current == $slug || title == $title)][0]{
       _id,
       members[]{user->{_id}, role, status},
-      approvalQueue[]{user->{_id, clerkId, username, email, imageUrl}, requestedAt}
+      approvalQueue[]{user->{_id, clerkId, username, email, image}, requestedAt}
     }`,
     { slug, title: slug }
   );

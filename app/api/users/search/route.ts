@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         _id,
         name,
         username,
-        profileImage,
+        image,
         clerkId
       }`,
       { q: `*${q}*` }

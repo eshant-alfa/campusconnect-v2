@@ -68,6 +68,12 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type SurveyResponseEntry = {
+  _type: "surveyResponseEntry";
+  key?: string;
+  value?: string;
+};
+
 export type SurveyResponse = {
   _id: string;
   _type: "surveyResponse";
@@ -86,11 +92,9 @@ export type SurveyResponse = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: "user";
   };
-  answers?: Array<{
-    questionId?: string;
-    answer?: string;
+  responses?: Array<{
     _key: string;
-  }>;
+  } & SurveyResponseEntry>;
   createdAt?: string;
 };
 
@@ -663,7 +667,7 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | SurveyResponse | SurveyQuestion | Survey | FlaggedContent | Notification | Message | Conversation | MarketplaceItem | EventComment | Event | Appeal | ModAction | Vote | Comment | Post | Subreddit | Slug | User | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | SurveyResponseEntry | SurveyResponse | SurveyQuestion | Survey | FlaggedContent | Notification | Message | Conversation | MarketplaceItem | EventComment | Event | Appeal | ModAction | Vote | Comment | Post | Subreddit | Slug | User | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./sanity/lib/comment/getCommentById.ts
 // Variable: getCommentByIdQuery

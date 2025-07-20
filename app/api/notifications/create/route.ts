@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
     // Find user in Sanity
     const user = await client.fetch(
-      `*[_type == "user" && clerkId == $clerkId][0]{_id, clerkId, name, username, profileImage}`,
+      `*[_type == "user" && clerkId == $clerkId][0]{_id, clerkId, name, username, image}`,
       { clerkId: userClerkId }
     );
     if (!user) {
